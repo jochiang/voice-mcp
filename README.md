@@ -73,6 +73,22 @@ Claude will call `speak` to synthesize and play the audio through your speakers.
 - Summarize code blocks rather than reading syntax (e.g., "the function takes a timeout and returns a dictionary")
 - Keep spoken responses concise - long text is tedious to listen to
 
+## Notes
+
+- **First-run downloads**: Models download automatically on first use - Whisper small (~460MB) and Supertonic (~260MB)
+- **Silence detection**: Recording stops after 1.5 seconds of silence (1 second for yes/no questions)
+- **Platform**: Developed on Windows, should work on macOS/Linux
+
+## Troubleshooting
+
+**No audio output from TTS:**
+- Some DACs require stereo output - the speak tool outputs stereo by default
+- Check your default audio output device
+
+**Recording stops too quickly:**
+- The silence threshold may be too sensitive for your microphone
+- Adjust `SILENCE_THRESHOLD` in `src/voice_mcp/audio.py` (default: 0.01)
+
 ## Configuration
 
 ### Whisper (Speech-to-Text)
