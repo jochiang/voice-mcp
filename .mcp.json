@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "voice": {
+      "command": "uv",
+      "args": ["run", "--directory", "G:/voice_mcp", "voice-mcp"]
+    }
+  }
+}
