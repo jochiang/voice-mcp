@@ -76,7 +76,7 @@ Claude will call `speak` to synthesize and play the audio through your speakers.
 ## Notes
 
 - **First-run downloads**: Models download automatically on first use - Whisper small (~460MB) and Supertonic (~260MB)
-- **Silence detection**: Recording stops after 1.5 seconds of silence (1 second for yes/no questions)
+- **Silence detection**: Recording stops after 1.5 seconds of silence
 - **Platform**: Developed on Windows, should work on macOS/Linux
 
 ## Troubleshooting

@@ -66,9 +66,7 @@ def listen_for_yes_no(timeout_seconds: int = 10) -> dict:
     Returns:
         dict with 'answer' (yes/no/unclear), 'transcript', and 'success' keys
     """
-    recorder = AudioRecorder(
-        silence_duration=1.0,  # Shorter silence threshold for quick responses
-    )
+    recorder = AudioRecorder()
 
     try:
         audio = recorder.record(timeout_seconds=float(timeout_seconds))
