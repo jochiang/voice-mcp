@@ -58,7 +58,9 @@ async def list_tools() -> list[Tool]:
             description=(
                 "Speak text aloud to the user using text-to-speech. "
                 "Use this to verbally communicate with the user instead of just displaying text. "
-                "Good for announcing results, reading content, or having a voice conversation."
+                "Good for announcing results, reading content, or having a voice conversation. "
+                "Tips: Keep text concise, describe code/URLs instead of reading verbatim, "
+                "summarize rather than recite syntax."
             ),
             inputSchema={
                 "type": "object",
@@ -81,7 +83,8 @@ async def list_tools() -> list[Tool]:
             description=(
                 "Speak text aloud then immediately listen for a full response. "
                 "Combines speak and listen_and_confirm in one call to reduce round trips. "
-                "Use this for conversational exchanges where you ask a question and wait for an answer."
+                "Use this for conversational exchanges where you ask a question and wait for an answer. "
+                "Tips: Keep text concise, describe code/URLs instead of reading verbatim."
             ),
             inputSchema={
                 "type": "object",
@@ -109,7 +112,8 @@ async def list_tools() -> list[Tool]:
             description=(
                 "Speak text aloud then immediately listen for a yes/no response. "
                 "Combines speak and listen_for_yes_no in one call to reduce round trips. "
-                "Use this for confirmations like 'Should I proceed?' or 'Is that correct?'"
+                "Use this for confirmations like 'Should I proceed?' or 'Is that correct?' "
+                "Tips: Keep questions short and clear."
             ),
             inputSchema={
                 "type": "object",
