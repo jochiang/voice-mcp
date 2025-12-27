@@ -79,10 +79,18 @@ For back-and-forth voice conversations, Claude can use the combined tools:
 
 These reduce latency by combining speak + listen in a single tool call.
 
-**Tips for better TTS output:**
-- Describe code/links instead of reading them verbatim (e.g., "the GitHub repo link" instead of spelling out URLs)
-- Summarize code blocks rather than reading syntax (e.g., "the function takes a timeout and returns a dictionary")
-- Keep spoken responses concise - long text is tedious to listen to
+### Customizing Speech Behavior
+
+The tool descriptions include default guidance for how Claude speaks. To customize this behavior, add instructions to your `CLAUDE.md` file. Examples:
+
+```markdown
+# Voice preferences
+- When speaking, be brief and conversational
+- Describe code changes at a high level, don't read syntax
+- Summarize URLs instead of spelling them out
+```
+
+You can encourage different styles - more verbose explanations, different tone, etc.
 
 ## Notes
 
