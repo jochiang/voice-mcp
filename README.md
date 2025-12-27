@@ -76,7 +76,7 @@ Claude will call `speak` to synthesize and play the audio through your speakers.
 ## Notes
 
 - **First-run downloads**: Models download automatically on first use - Whisper small (~460MB) and Supertonic (~260MB)
-- **Silence detection**: Recording stops after 1.5 seconds of silence
+- **Silence detection**: Recording stops after 2.5 seconds of silence
 - **Platform**: Developed on Windows, should work on macOS/Linux
 
 ## Troubleshooting
@@ -88,6 +88,10 @@ Claude will call `speak` to synthesize and play the audio through your speakers.
 **Recording stops too quickly:**
 - The silence threshold may be too sensitive for your microphone
 - Adjust `SILENCE_THRESHOLD` in `src/voice_mcp/audio.py` (default: 0.01)
+- Increase `SILENCE_DURATION_S` if you need more pause time between phrases (default: 2.5 seconds)
+
+**Recording doesn't stop fast enough:**
+- Decrease `SILENCE_DURATION_S` in `src/voice_mcp/audio.py` for quicker cutoff
 
 ## Configuration
 

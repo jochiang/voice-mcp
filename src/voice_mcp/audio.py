@@ -11,7 +11,7 @@ CHANNELS = 1
 DTYPE = np.float32
 BLOCK_DURATION_MS = 30  # Process audio in 30ms blocks
 SILENCE_THRESHOLD = 0.01  # RMS threshold for silence detection
-SILENCE_DURATION_S = 1.5  # Seconds of silence before auto-stop
+SILENCE_DURATION_S = 2.5  # Seconds of silence before auto-stop
 
 # Beep settings
 BEEP_FREQ_START = 880  # Hz (A5 note) - start recording
