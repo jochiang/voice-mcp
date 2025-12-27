@@ -10,7 +10,7 @@ _tts: TTS | None = None
 _voice_style = None
 
 # Audio playback settings
-PLAYBACK_SAMPLE_RATE = 24000  # Supertonic outputs 24kHz audio
+PLAYBACK_SAMPLE_RATE = 44100  # Supertonic outputs 44.1kHz audio
 
 
 def load_tts() -> TTS:
@@ -54,11 +54,9 @@ def speak(text: str, voice: str = "M1") -> dict:
         # Synthesize speech
         wav, duration = tts.synthesize(text, voice_style=_voice_style)
 
-        # Convert to numpy array if needed and ensure float32
-        if not isinstance(wav, np.ndarray):
-            wav = np.array(wav, dtype=np.float32)
-        else:
-            wav = wav.astype(np.float32)
+        # Handle output format: wav is (1, samples), duration is array
+        wav = np.asarray(wav, dtype=np.float32).flatten()
+        duration_secs = float(np.asarray(duration).flatten()[0])
 
         # Play audio (stereo for compatibility with DACs)
         stereo = np.column_stack([wav, wav])
@@ -66,7 +64,7 @@ def speak(text: str, voice: str = "M1") -> dict:
 
         return {
             "success": True,
-            "duration": duration,
+            "duration": duration_secs,
         }
     except Exception as e:
         return {
