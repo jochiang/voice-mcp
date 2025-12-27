@@ -28,7 +28,7 @@ def play_beep(frequency: float = BEEP_FREQ_START, duration: float = BEEP_DURATIO
     fade_samples = int(BEEP_SAMPLE_RATE * 0.01)  # 10ms fade
     tone[:fade_samples] *= np.linspace(0, 1, fade_samples)
     tone[-fade_samples:] *= np.linspace(1, 0, fade_samples)
-    tone = (tone * 0.7).astype(np.float32)  # Volume level
+    tone = (tone * 0.5).astype(np.float32)  # Volume level
     # Convert to stereo for DACs that require it
     stereo = np.column_stack([tone, tone])
     sd.play(stereo, BEEP_SAMPLE_RATE, blocking=True)
