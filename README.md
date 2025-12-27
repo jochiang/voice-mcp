@@ -68,6 +68,11 @@ Ask Claude to speak responses:
 
 Claude will call `speak` to synthesize and play the audio through your speakers.
 
+**Tips for better TTS output:**
+- Describe code/links instead of reading them verbatim (e.g., "the GitHub repo link" instead of spelling out URLs)
+- Summarize code blocks rather than reading syntax (e.g., "the function takes a timeout and returns a dictionary")
+- Keep spoken responses concise - long text is tedious to listen to
+
 ## Configuration
 
 ### Whisper (Speech-to-Text)
