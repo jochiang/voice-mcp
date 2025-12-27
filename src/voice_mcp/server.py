@@ -5,7 +5,7 @@ from mcp.server import Server
 from mcp.server.stdio import stdio_server
 from mcp.types import Tool, TextContent
 
-from .tools import listen_and_confirm, listen_for_yes_no
+from .tools import listen_and_confirm, listen_for_yes_no, speak_and_listen, speak_and_confirm
 from .tts import speak
 
 # Create MCP server
@@ -76,6 +76,62 @@ async def list_tools() -> list[Tool]:
                 "required": ["text"],
             },
         ),
+        Tool(
+            name="speak_and_listen",
+            description=(
+                "Speak text aloud then immediately listen for a full response. "
+                "Combines speak and listen_and_confirm in one call to reduce round trips. "
+                "Use this for conversational exchanges where you ask a question and wait for an answer."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "text": {
+                        "type": "string",
+                        "description": "The text to speak aloud",
+                    },
+                    "voice": {
+                        "type": "string",
+                        "description": "Voice to use (default: M1)",
+                        "default": "M1",
+                    },
+                    "timeout_seconds": {
+                        "type": "integer",
+                        "description": "Maximum recording duration in seconds",
+                        "default": 30,
+                    },
+                },
+                "required": ["text"],
+            },
+        ),
+        Tool(
+            name="speak_and_confirm",
+            description=(
+                "Speak text aloud then immediately listen for a yes/no response. "
+                "Combines speak and listen_for_yes_no in one call to reduce round trips. "
+                "Use this for confirmations like 'Should I proceed?' or 'Is that correct?'"
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "text": {
+                        "type": "string",
+                        "description": "The text to speak aloud",
+                    },
+                    "voice": {
+                        "type": "string",
+                        "description": "Voice to use (default: M1)",
+                        "default": "M1",
+                    },
+                    "timeout_seconds": {
+                        "type": "integer",
+                        "description": "Maximum recording duration in seconds",
+                        "default": 15,
+                    },
+                },
+                "required": ["text"],
+            },
+        ),
     ]
 
 
@@ -133,6 +189,44 @@ async def call_tool(name: str, arguments: dict) -> list[TextContent]:
             return [TextContent(
                 type="text",
                 text=f"Error: {result.get('error', 'Unknown error')}"
+            )]
+
+    elif name == "speak_and_listen":
+        text = arguments.get("text", "")
+        voice = arguments.get("voice", "M1")
+        timeout = arguments.get("timeout_seconds", 30)
+        result = await asyncio.get_event_loop().run_in_executor(
+            None, lambda: speak_and_listen(text, voice, timeout)
+        )
+
+        if result["success"]:
+            return [TextContent(
+                type="text",
+                text=f"Spoke: {text[:100]}{'...' if len(text) > 100 else ''}\nTranscript: {result['transcript']}\nLanguage: {result['language']}"
+            )]
+        else:
+            return [TextContent(
+                type="text",
+                text=f"Spoke: {result['spoke']}\nError: {result.get('error', 'Unknown error')}"
+            )]
+
+    elif name == "speak_and_confirm":
+        text = arguments.get("text", "")
+        voice = arguments.get("voice", "M1")
+        timeout = arguments.get("timeout_seconds", 15)
+        result = await asyncio.get_event_loop().run_in_executor(
+            None, lambda: speak_and_confirm(text, voice, timeout)
+        )
+
+        if result["success"]:
+            return [TextContent(
+                type="text",
+                text=f"Spoke: {text[:100]}{'...' if len(text) > 100 else ''}\nAnswer: {result['answer']}\nTranscript: {result['transcript']}"
+            )]
+        else:
+            return [TextContent(
+                type="text",
+                text=f"Spoke: {result['spoke']}\nAnswer: unclear\nError: {result.get('error', 'Unknown error')}"
             )]
 
     else:

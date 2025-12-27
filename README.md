@@ -16,6 +16,10 @@ A local MCP server that provides voice tools for Claude Code - speech-to-text us
 - Local synthesis using [Supertonic](https://github.com/supertone-inc/supertonic) (no API calls)
 - Fast on-device generation (66M parameters)
 
+### Combined Tools
+- **speak_and_listen** - Speak then listen for a full response (reduces round trips)
+- **speak_and_confirm** - Speak then listen for yes/no (reduces round trips)
+
 ## Requirements
 
 - Python 3.10+
@@ -67,6 +71,13 @@ Ask Claude to speak responses:
 - "read that to me"
 
 Claude will call `speak` to synthesize and play the audio through your speakers.
+
+### Voice Conversations
+For back-and-forth voice conversations, Claude can use the combined tools:
+- `speak_and_listen` - Ask a question and wait for a full answer
+- `speak_and_confirm` - Ask a yes/no question and get confirmation
+
+These reduce latency by combining speak + listen in a single tool call.
 
 **Tips for better TTS output:**
 - Describe code/links instead of reading them verbatim (e.g., "the GitHub repo link" instead of spelling out URLs)

@@ -2,6 +2,7 @@
 
 from .audio import AudioRecorder
 from .transcribe import transcribe
+from .tts import speak as tts_speak
 
 # Words/phrases that indicate "yes"
 YES_PATTERNS = {
@@ -105,6 +106,129 @@ def listen_for_yes_no(timeout_seconds: int = 10) -> dict:
         }
     except Exception as e:
         return {
+            "answer": "unclear",
+            "transcript": "",
+            "success": False,
+            "error": str(e),
+        }
+
+
+def speak_and_listen(text: str, voice: str = "M1", timeout_seconds: int = 30) -> dict:
+    """
+    Speak text then listen for a full response.
+
+    Args:
+        text: The text to speak
+        voice: Voice name (default: M1)
+        timeout_seconds: Maximum recording duration
+
+    Returns:
+        dict with 'spoke', 'transcript', 'language', and 'success' keys
+    """
+    # First speak
+    speak_result = tts_speak(text, voice)
+    if not speak_result["success"]:
+        return {
+            "spoke": False,
+            "transcript": "",
+            "success": False,
+            "error": speak_result.get("error", "TTS failed"),
+        }
+
+    # Then listen
+    recorder = AudioRecorder()
+    try:
+        audio = recorder.record(timeout_seconds=float(timeout_seconds))
+
+        if len(audio) == 0:
+            return {
+                "spoke": True,
+                "transcript": "",
+                "success": False,
+                "error": "No audio recorded",
+            }
+
+        result = transcribe(audio)
+
+        return {
+            "spoke": True,
+            "transcript": result["text"],
+            "language": result["language"],
+            "success": True,
+        }
+    except Exception as e:
+        return {
+            "spoke": True,
+            "transcript": "",
+            "success": False,
+            "error": str(e),
+        }
+
+
+def speak_and_confirm(text: str, voice: str = "M1", timeout_seconds: int = 15) -> dict:
+    """
+    Speak text then listen for a yes/no response.
+
+    Args:
+        text: The text to speak
+        voice: Voice name (default: M1)
+        timeout_seconds: Maximum recording duration
+
+    Returns:
+        dict with 'spoke', 'answer', 'transcript', and 'success' keys
+    """
+    # First speak
+    speak_result = tts_speak(text, voice)
+    if not speak_result["success"]:
+        return {
+            "spoke": False,
+            "answer": "unclear",
+            "transcript": "",
+            "success": False,
+            "error": speak_result.get("error", "TTS failed"),
+        }
+
+    # Then listen for yes/no
+    recorder = AudioRecorder()
+    try:
+        audio = recorder.record(timeout_seconds=float(timeout_seconds))
+
+        if len(audio) == 0:
+            return {
+                "spoke": True,
+                "answer": "unclear",
+                "transcript": "",
+                "success": False,
+                "error": "No audio recorded",
+            }
+
+        result = transcribe(audio)
+        transcript = result["text"].lower().strip()
+
+        # Check for yes/no patterns
+        answer = "unclear"
+
+        for pattern in YES_PATTERNS:
+            if pattern in transcript:
+                answer = "yes"
+                break
+
+        if answer == "unclear":
+            for pattern in NO_PATTERNS:
+                if pattern in transcript:
+                    answer = "no"
+                    break
+
+        return {
+            "spoke": True,
+            "answer": answer,
+            "transcript": result["text"],
+            "language": result["language"],
+            "success": True,
+        }
+    except Exception as e:
+        return {
+            "spoke": True,
             "answer": "unclear",
             "transcript": "",
             "success": False,
