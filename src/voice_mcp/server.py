@@ -21,7 +21,7 @@ async def list_tools() -> list[Tool]:
             description=(
                 "Record audio from the user's microphone and transcribe it using Whisper. "
                 "Use this when you need to hear the user explain something verbally. "
-                "Recording stops automatically after 1.5 seconds of silence, or the user can press Enter. "
+                "Recording stops automatically after 2.5 seconds of silence. "
                 "After calling this, repeat the transcript back to the user so they can confirm or correct it."
             ),
             inputSchema={
