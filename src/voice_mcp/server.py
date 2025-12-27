@@ -1,4 +1,4 @@
-"""MCP server for voice-to-text tools."""
+"""MCP server for voice tools (speech-to-text and text-to-speech)."""
 
 import asyncio
 from mcp.server import Server
@@ -6,6 +6,7 @@ from mcp.server.stdio import stdio_server
 from mcp.types import Tool, TextContent
 
 from .tools import listen_and_confirm, listen_for_yes_no
+from .tts import speak
 
 # Create MCP server
 server = Server("voice-mcp")
@@ -52,6 +53,29 @@ async def list_tools() -> list[Tool]:
                 },
             },
         ),
+        Tool(
+            name="speak",
+            description=(
+                "Speak text aloud to the user using text-to-speech. "
+                "Use this to verbally communicate with the user instead of just displaying text. "
+                "Good for announcing results, reading content, or having a voice conversation."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "text": {
+                        "type": "string",
+                        "description": "The text to speak aloud",
+                    },
+                    "voice": {
+                        "type": "string",
+                        "description": "Voice to use (default: M1)",
+                        "default": "M1",
+                    },
+                },
+                "required": ["text"],
+            },
+        ),
     ]
 
 
@@ -91,6 +115,24 @@ async def call_tool(name: str, arguments: dict) -> list[TextContent]:
             return [TextContent(
                 type="text",
                 text=f"Answer: unclear\nError: {result.get('error', 'Unknown error')}"
+            )]
+
+    elif name == "speak":
+        text = arguments.get("text", "")
+        voice = arguments.get("voice", "M1")
+        result = await asyncio.get_event_loop().run_in_executor(
+            None, lambda: speak(text, voice)
+        )
+
+        if result["success"]:
+            return [TextContent(
+                type="text",
+                text=f"Spoke: {text[:100]}{'...' if len(text) > 100 else ''}\nDuration: {result['duration']:.2f}s"
+            )]
+        else:
+            return [TextContent(
+                type="text",
+                text=f"Error: {result.get('error', 'Unknown error')}"
             )]
 
     else:

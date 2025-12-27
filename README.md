@@ -1,20 +1,27 @@
 # voice-mcp
 
-A local MCP server that provides voice-to-text tools for Claude Code using Whisper.
+A local MCP server that provides voice tools for Claude Code - speech-to-text using Whisper and text-to-speech using Supertonic.
 
 ## Features
 
+### Speech-to-Text (Whisper)
 - **listen_and_confirm** - Record speech, transcribe with Whisper, return transcript for confirmation
 - **listen_for_yes_no** - Quick yes/no detection for binary decisions
 - Local transcription using [faster-whisper](https://github.com/SYSTRAN/faster-whisper) (no API calls)
 - Automatic silence detection to stop recording
 - Audio beeps to indicate recording start/end
 
+### Text-to-Speech (Supertonic)
+- **speak** - Speak text aloud to the user
+- Local synthesis using [Supertonic](https://github.com/supertone-inc/supertonic) (no API calls)
+- Fast on-device generation (66M parameters)
+
 ## Requirements
 
 - Python 3.10+
 - [uv](https://docs.astral.sh/uv/) package manager
-- A microphone
+- A microphone (for speech-to-text)
+- Speakers/headphones (for text-to-speech)
 
 ## Installation
 
@@ -45,7 +52,8 @@ A local MCP server that provides voice-to-text tools for Claude Code using Whisp
 
 ## Usage
 
-In Claude Code, trigger voice input by saying something like:
+### Voice Input
+Trigger voice input by saying something like:
 - "let me explain verbally"
 - "I'll tell you verbally"
 
@@ -53,8 +61,16 @@ Claude will call `listen_and_confirm`, you'll hear a beep, speak your response, 
 
 For yes/no questions, Claude can use `listen_for_yes_no` which interprets your response as "yes", "no", or "unclear".
 
+### Voice Output
+Ask Claude to speak responses:
+- "say that out loud"
+- "read that to me"
+
+Claude will call `speak` to synthesize and play the audio through your speakers.
+
 ## Configuration
 
+### Whisper (Speech-to-Text)
 The Whisper model defaults to `small` running on CPU. To change this, edit `src/voice_mcp/transcribe.py`:
 
 ```python
@@ -63,6 +79,9 @@ _model = WhisperModel("small", device="cpu", compute_type="int8")
 ```
 
 For GPU acceleration, change `device="cpu"` to `device="cuda"` (requires cuDNN).
+
+### Supertonic (Text-to-Speech)
+The default voice is `M1`. Available voices can be found at the [Supertonic voice gallery](https://supertone-inc.github.io/supertonic-py/voices/).
 
 ## License
 
