@@ -20,17 +20,19 @@ NO_PATTERNS = {
 }
 
 
-def listen_and_confirm(timeout_seconds: int = 30) -> dict:
+def listen_and_confirm(timeout_seconds: int = 30, silence_seconds: float = 2.5) -> dict:
     """
     Record and transcribe user speech for confirmation.
 
     Args:
         timeout_seconds: Maximum recording duration
+        silence_seconds: Seconds of silence before auto-stop (min 2.0)
 
     Returns:
         dict with 'transcript' and 'success' keys
     """
-    recorder = AudioRecorder()
+    silence_seconds = max(2.0, silence_seconds)  # Enforce minimum
+    recorder = AudioRecorder(silence_duration=silence_seconds)
 
     try:
         audio = recorder.record(timeout_seconds=float(timeout_seconds))
@@ -57,17 +59,19 @@ def listen_and_confirm(timeout_seconds: int = 30) -> dict:
         }
 
 
-def listen_for_yes_no(timeout_seconds: int = 10) -> dict:
+def listen_for_yes_no(timeout_seconds: int = 10, silence_seconds: float = 2.5) -> dict:
     """
     Record and interpret user speech as yes/no response.
 
     Args:
         timeout_seconds: Maximum recording duration
+        silence_seconds: Seconds of silence before auto-stop (min 2.0)
 
     Returns:
         dict with 'answer' (yes/no/unclear), 'transcript', and 'success' keys
     """
-    recorder = AudioRecorder()
+    silence_seconds = max(2.0, silence_seconds)  # Enforce minimum
+    recorder = AudioRecorder(silence_duration=silence_seconds)
 
     try:
         audio = recorder.record(timeout_seconds=float(timeout_seconds))
@@ -113,7 +117,7 @@ def listen_for_yes_no(timeout_seconds: int = 10) -> dict:
         }
 
 
-def speak_and_listen(text: str, voice: str = "M1", timeout_seconds: int = 30) -> dict:
+def speak_and_listen(text: str, voice: str = "M1", timeout_seconds: int = 30, silence_seconds: float = 2.5) -> dict:
     """
     Speak text then listen for a full response.
 
@@ -121,6 +125,7 @@ def speak_and_listen(text: str, voice: str = "M1", timeout_seconds: int = 30) ->
         text: The text to speak
         voice: Voice name (default: M1)
         timeout_seconds: Maximum recording duration
+        silence_seconds: Seconds of silence before auto-stop (min 2.0)
 
     Returns:
         dict with 'spoke', 'transcript', 'language', and 'success' keys
@@ -136,7 +141,8 @@ def speak_and_listen(text: str, voice: str = "M1", timeout_seconds: int = 30) ->
         }
 
     # Then listen
-    recorder = AudioRecorder()
+    silence_seconds = max(2.0, silence_seconds)  # Enforce minimum
+    recorder = AudioRecorder(silence_duration=silence_seconds)
     try:
         audio = recorder.record(timeout_seconds=float(timeout_seconds))
 
@@ -165,7 +171,7 @@ def speak_and_listen(text: str, voice: str = "M1", timeout_seconds: int = 30) ->
         }
 
 
-def speak_and_confirm(text: str, voice: str = "M1", timeout_seconds: int = 15) -> dict:
+def speak_and_confirm(text: str, voice: str = "M1", timeout_seconds: int = 15, silence_seconds: float = 2.5) -> dict:
     """
     Speak text then listen for a yes/no response.
 
@@ -173,6 +179,7 @@ def speak_and_confirm(text: str, voice: str = "M1", timeout_seconds: int = 15) -
         text: The text to speak
         voice: Voice name (default: M1)
         timeout_seconds: Maximum recording duration
+        silence_seconds: Seconds of silence before auto-stop (min 2.0)
 
     Returns:
         dict with 'spoke', 'answer', 'transcript', and 'success' keys
@@ -189,7 +196,8 @@ def speak_and_confirm(text: str, voice: str = "M1", timeout_seconds: int = 15) -
         }
 
     # Then listen for yes/no
-    recorder = AudioRecorder()
+    silence_seconds = max(2.0, silence_seconds)  # Enforce minimum
+    recorder = AudioRecorder(silence_duration=silence_seconds)
     try:
         audio = recorder.record(timeout_seconds=float(timeout_seconds))
 

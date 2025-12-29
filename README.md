@@ -79,6 +79,10 @@ For back-and-forth voice conversations, Claude can use the combined tools:
 
 These reduce latency by combining speak + listen in a single tool call.
 
+### Dynamic Silence Detection
+
+All listening tools accept a `silence_seconds` parameter (default: 2.5, minimum: 2.0). Claude can adjust this per-call based on context - for example, using a longer silence period if the user needs more time to think, or keeping it shorter for quick confirmations.
+
 ### Customizing Speech Behavior
 
 The tool descriptions include default guidance for how Claude speaks. To customize this behavior, add instructions to your `CLAUDE.md` file. Examples:
@@ -95,7 +99,7 @@ You can encourage different styles - more verbose explanations, different tone, 
 ## Notes
 
 - **First-run downloads**: Models download automatically on first use - Whisper small (~460MB) and Supertonic (~260MB)
-- **Silence detection**: Recording stops after 2.5 seconds of silence
+- **Silence detection**: Recording stops after 2.5 seconds of silence (configurable per-call, min 2.0s)
 - **Platform**: Developed on Windows, should work on macOS/Linux
 
 ## Troubleshooting
@@ -107,10 +111,10 @@ You can encourage different styles - more verbose explanations, different tone, 
 **Recording stops too quickly:**
 - The silence threshold may be too sensitive for your microphone
 - Adjust `SILENCE_THRESHOLD` in `src/voice_mcp/audio.py` (default: 0.01)
-- Increase `SILENCE_DURATION_S` if you need more pause time between phrases (default: 2.5 seconds)
+- Claude can also pass a higher `silence_seconds` parameter per-call (default: 2.5, min: 2.0)
 
 **Recording doesn't stop fast enough:**
-- Decrease `SILENCE_DURATION_S` in `src/voice_mcp/audio.py` for quicker cutoff
+- Claude can pass a lower `silence_seconds` parameter (minimum 2.0 seconds)
 
 ## Configuration
 

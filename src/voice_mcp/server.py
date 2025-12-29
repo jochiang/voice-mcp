@@ -21,7 +21,7 @@ async def list_tools() -> list[Tool]:
             description=(
                 "Record audio from the user's microphone and transcribe it using Whisper. "
                 "Use this when you need to hear the user explain something verbally. "
-                "Recording stops automatically after 2.5 seconds of silence. "
+                "Recording stops automatically after silence is detected. "
                 "After calling this, repeat the transcript back to the user so they can confirm or correct it."
             ),
             inputSchema={
@@ -31,6 +31,11 @@ async def list_tools() -> list[Tool]:
                         "type": "integer",
                         "description": "Maximum recording duration in seconds",
                         "default": 30,
+                    },
+                    "silence_seconds": {
+                        "type": "number",
+                        "description": "Seconds of silence before auto-stop (min 2.0, default 2.5). Increase if user needs more pause time.",
+                        "default": 2.5,
                     },
                 },
             },
@@ -49,6 +54,11 @@ async def list_tools() -> list[Tool]:
                         "type": "integer",
                         "description": "Maximum recording duration in seconds",
                         "default": 10,
+                    },
+                    "silence_seconds": {
+                        "type": "number",
+                        "description": "Seconds of silence before auto-stop (min 2.0, default 2.5)",
+                        "default": 2.5,
                     },
                 },
             },
@@ -103,6 +113,11 @@ async def list_tools() -> list[Tool]:
                         "description": "Maximum recording duration in seconds",
                         "default": 30,
                     },
+                    "silence_seconds": {
+                        "type": "number",
+                        "description": "Seconds of silence before auto-stop (min 2.0, default 2.5). Increase if user needs more pause time.",
+                        "default": 2.5,
+                    },
                 },
                 "required": ["text"],
             },
@@ -132,6 +147,11 @@ async def list_tools() -> list[Tool]:
                         "description": "Maximum recording duration in seconds",
                         "default": 15,
                     },
+                    "silence_seconds": {
+                        "type": "number",
+                        "description": "Seconds of silence before auto-stop (min 2.0, default 2.5)",
+                        "default": 2.5,
+                    },
                 },
                 "required": ["text"],
             },
@@ -144,9 +164,10 @@ async def call_tool(name: str, arguments: dict) -> list[TextContent]:
     """Handle tool calls."""
     if name == "listen_and_confirm":
         timeout = arguments.get("timeout_seconds", 30)
+        silence = arguments.get("silence_seconds", 2.5)
         # Run in thread pool since audio recording is blocking
         result = await asyncio.get_event_loop().run_in_executor(
-            None, lambda: listen_and_confirm(timeout)
+            None, lambda: listen_and_confirm(timeout, silence)
         )
 
         if result["success"]:
@@ -162,8 +183,9 @@ async def call_tool(name: str, arguments: dict) -> list[TextContent]:
 
     elif name == "listen_for_yes_no":
         timeout = arguments.get("timeout_seconds", 10)
+        silence = arguments.get("silence_seconds", 2.5)
         result = await asyncio.get_event_loop().run_in_executor(
-            None, lambda: listen_for_yes_no(timeout)
+            None, lambda: listen_for_yes_no(timeout, silence)
         )
 
         if result["success"]:
@@ -199,8 +221,9 @@ async def call_tool(name: str, arguments: dict) -> list[TextContent]:
         text = arguments.get("text", "")
         voice = arguments.get("voice", "M1")
         timeout = arguments.get("timeout_seconds", 30)
+        silence = arguments.get("silence_seconds", 2.5)
         result = await asyncio.get_event_loop().run_in_executor(
-            None, lambda: speak_and_listen(text, voice, timeout)
+            None, lambda: speak_and_listen(text, voice, timeout, silence)
         )
 
         if result["success"]:
@@ -218,8 +241,9 @@ async def call_tool(name: str, arguments: dict) -> list[TextContent]:
         text = arguments.get("text", "")
         voice = arguments.get("voice", "M1")
         timeout = arguments.get("timeout_seconds", 15)
+        silence = arguments.get("silence_seconds", 2.5)
         result = await asyncio.get_event_loop().run_in_executor(
-            None, lambda: speak_and_confirm(text, voice, timeout)
+            None, lambda: speak_and_confirm(text, voice, timeout, silence)
         )
 
         if result["success"]:
